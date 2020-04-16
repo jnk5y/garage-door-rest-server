@@ -5,6 +5,8 @@ secrets:
     external: true
   password:
     external: true
+  firebase_key:
+    external: true
 
 services:
   garage-door:
@@ -15,6 +17,7 @@ services:
     secrets:
       - username
       - password
+      - firebase_key
     ports:
       - '8888:8888/tcp'
     environment:

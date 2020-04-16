@@ -32,7 +32,6 @@ import pigpio
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import base64
 import ssl
-#import socketserver
 import httplib2
 
 from configparser import ConfigParser
@@ -45,8 +44,9 @@ def send_notification(logger, name, state, time_in_state, alert_type, firebase_i
         Send a Firebase event using the FCM.
         Get the server key by following the URL at https://console.firebase.google.com/
     """
-    name,home_away,network_ip,firebase_key,alert_open_notify,alert_open_minutes,alert_open_start,alert_open_end,forgot_open_notify,forgot_open_minutes = read_config()
-
+    name,home_away,network_ip,alert_open_notify,alert_open_minutes,alert_open_start,alert_open_end,forgot_open_notify,forgot_open_minutes = read_config()
+    username, password, firebase_key = read_secrets()
+    
     time = format_duration(int(time_in_state))
     body = "Your garage door has been " + state + " for " + time
     headers = { "Content-type": "application/json", "Authorization": firebase_key}
@@ -126,7 +126,6 @@ def read_config():
         name = config.get('main', 'name')
         home_away = config.get('main', 'home_away')
         network_ip = config.get('main', 'network_ip')
-        firebase_key = config.get('main', 'firebase_key')
         alert_open_notify = config.getboolean('main', 'alert_open_notify')
         alert_open_minutes = config.getint('main', 'alert_open_minutes')
         alert_open_start = config.getint('main', 'alert_open_start_time')
@@ -135,9 +134,18 @@ def read_config():
         forgot_open_minutes = config.getint('main', 'forgot_open_minutes')
     except:
         logger.error("Exception reading configuration file: %s", sys.exc_info()[0])
-        sys.exit(0)
-   
-    return name,home_away,network_ip,firebase_key,alert_open_notify,alert_open_minutes,alert_open_start,alert_open_end,forgot_open_notify,forgot_open_minutes
+        #set to defaults
+        name = 'garage door'
+        home_away = 'home'
+        network_ip = '192.168.86.9'
+        alert_open_notify = False
+        alert_open_minutes = 1
+        alert_open_start = 23
+        alert_open_end = 7
+        forgot_open_notify = False
+        forgot_open_minutes = 15
+
+    return name,home_away,network_ip,alert_open_notify,alert_open_minutes,alert_open_start,alert_open_end,forgot_open_notify,forgot_open_minutes
 
 def read_secrets():
     try:
@@ -151,18 +159,23 @@ def read_secrets():
         f = open('/run/secrets/password', "r")
         password = f.readline().strip()
         f.close()
+
+        f = open('/run/secrets/firebase_key', "r")
+        firebase_key = f.readline().strip()
+        f.close()
+
     except:
         logger.error("Exception reading secrets files: %s", sys.exc_info()[0])
         sys.exit(0)
 
-    return username, password
+    return username, password, firebase_key
 
 ##############################################################################
 # Listener thread for getting/setting state and openning/closing the garage
 ##############################################################################
 def garage_listener():
 
-    name,home_away,network_ip,firebase_key,alert_open_notify,alert_open_minutes,alert_open_start,alert_open_end,forgot_open_notify,forgot_open_minutes = read_config()
+    name,home_away,network_ip,alert_open_notify,alert_open_minutes,alert_open_start,alert_open_end,forgot_open_notify,forgot_open_minutes = read_config()
 
     try:
         # Initialize pigpio
@@ -335,7 +348,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(response.encode())
             pass
         else:
-            username, password = read_secrets()
+            username, password, firebase_key = read_secrets()
 
             if( username == '' or password == ''):
                 logger.error('no username or password')
