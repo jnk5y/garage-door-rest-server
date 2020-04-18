@@ -23,7 +23,7 @@ services:
     environment:
       TZ: 'America/New_York'
     volumes:
-      - '/home/jkyrus/Documents/code/garage-door-rest-server/config/:/usr/src/app/config/:z'
+      - '/home/john/Documents/code/garage-door-rest-server/config/:/usr/src/app/config/:z'
       - '/etc/letsencrypt/:/usr/src/app/certs/:z'
 #    healthcheck:
 #      test: curl --fail -k -s https://localhost:8888/garage/health || exit 1
