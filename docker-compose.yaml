@@ -11,7 +11,7 @@ secrets:
 services:
   garage-door:
     container_name: garage-door
-    image: garage-door-rest-server
+    image: garage-door-rest-server:latest
     deploy:
       replicas: 1
     secrets:
@@ -23,11 +23,11 @@ services:
     environment:
       TZ: 'America/New_York'
     volumes:
-      - './config/:/usr/src/app/config/:z'
+      - '/home/jkyrus/Documents/code/garage-door-rest-server/config/:/usr/src/app/config/:z'
       - '/etc/letsencrypt/:/usr/src/app/certs/:z'
-    healthcheck:
-      test: curl --fail -k -s https://localhost:8888/garage/health || exit 1
-      interval: 1m
-      timeout: 10s
-      retries: 2
+#    healthcheck:
+#      test: curl --fail -k -s https://localhost:8888/garage/health || exit 1
+#      interval: 1m
+#      timeout: 10s
+#      retries: 2
     restart: unless-stopped
