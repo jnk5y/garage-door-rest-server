@@ -44,26 +44,28 @@ def send_notification(logger, name, state, time_in_state, alert_type, firebase_i
         Send a Firebase event using the FCM.
         Get the server key by following the URL at https://console.firebase.google.com/
     """
-    name,home_away,network_ip,alert_open_notify,alert_open_minutes,alert_open_start,alert_open_end,forgot_open_notify,forgot_open_minutes = read_config()
-    username, password, firebase_key = read_secrets()
-    
-    time = format_duration(int(time_in_state))
-    body = "Your garage door has been " + state + " for " + time
-    headers = { "Content-type": "application/json", "Authorization": firebase_key}
-    payload = ''
+    AUTHKEY, FIREBASE_KEY = read_secrets()    
 
-    if alert_type == 'alert':
-        payload = { "notification": { "title": "Garage door alert", "body": body, "sound": "default" }, "data": { "event": state }, "to": firebase_id }
-        logger.info("Sending Firebase alert event: %s, %s, %s", name, state, time)
+    if FIREBASE_KEY == '' or firebase_id == '':
+        logger.error("No Firebase Key or ID")
     else:
-        payload = { "data": { "event": state }, "to": firebase_id }
-        logger.info("Sending Firebase data event: %s, %s", name, state)
-    
-    try:
-        requests.post("https://fcm.googleapis.com/fcm/send", headers=headers, json=payload)
-    except:
-        logger.error("Exception sending Firebase event: %s", sys.exc_info()[0])
+        time = format_duration(int(time_in_state))
+        body = "Your garage door has been " + state + " for " + time
+        headers = { "Content-type": "application/json", "Authorization": FIREBASE_KEY}
+        payload = ''
 
+        if alert_type == 'alert':
+            payload = { "notification": { "title": "Garage door alert", "body": body, "sound": "default" }, "data": { "event": state }, "to": firebase_id }
+        else:
+            payload = { "data": { "event": state }, "to": firebase_id }
+    
+        try:
+            requests.post("https://fcm.googleapis.com/fcm/send", headers=headers, json=payload)
+            logger.info("Sent firebase %s event: %s, %s, %s", alert_type, name, state, time)
+        except:
+            logger.error("Exception sending Firebase event: %s", sys.exc_info()[0])
+    
+    return
 
 def format_duration(duration_sec):
     """Format a duration into a human friendly string"""
@@ -149,26 +151,18 @@ def read_config():
 
 def read_secrets():
     try:
-        # Read secret files
-        logger.info("Reading secret files")
-
-        f = open('/run/secrets/username', "r")
-        username = f.readline().strip()
+        f = open('/run/secrets/AUTHKEY', "r")
+        AUTHKEY = f.readline().strip()
         f.close()
 
-        f = open('/run/secrets/password', "r")
-        password = f.readline().strip()
+        f = open('/run/secrets/FIREBASE_KEY', "r")
+        FIREBASE_KEY = f.readline().strip()
         f.close()
-
-        f = open('/run/secrets/firebase_key', "r")
-        firebase_key = f.readline().strip()
-        f.close()
-
     except:
         logger.error("Exception reading secrets files: %s", sys.exc_info()[0])
         sys.exit(0)
 
-    return username, password, firebase_key
+    return AUTHKEY, FIREBASE_KEY
 
 ##############################################################################
 # Listener thread for getting/setting state and openning/closing the garage
@@ -341,37 +335,32 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         response = ''
         
         if trigger == 'garage' and action == 'health':
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/plain');
-            self.end_headers()
-            response = 'healthy'
-            self.wfile.write(response.encode())
+#            self.send_response(200)
+#            self.send_header('Content-Type', 'text/plain');
+#            self.end_headers()
+#            response = 'healthy'
+#            self.wfile.write(response.encode())
             pass
         else:
-            username, password, firebase_key = read_secrets()
+            AUTHKEY, FIREBASE_KEY = read_secrets()
 
-            if( username == '' or password == ''):
-                logger.error('no username or password')
+            if AUTHKEY == '':
+                logger.error('Empty Authentication')
                 sys.exit(0)
-        
-            authentication = username + ':' + password
-            key = base64.b64encode(authentication.encode())
-        
-            if self.headers.get('Authorization') == 'Basic '+ str(key,'utf-8'):
-                if trigger == 'garage':
-                    listeningQueue.put(action)
-                    listeningQueue.join()
-                    response = responseQueue.get()
-                    responseQueue.task_done()
-
-                self.send_response(200)
-                self.send_header('Content-Type', 'text/plain');
-                self.end_headers()
-                self.wfile.write(response.encode())
-                pass
             else:
-                pass
-            pass
+                if self.headers.get('Authorization') == ('Basic '+ AUTHKEY):
+                    if trigger == 'garage':
+                        listeningQueue.put(action)
+                        listeningQueue.join()
+                        response = responseQueue.get()
+                        responseQueue.task_done()
+
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'text/plain');
+                    self.end_headers()
+                    self.wfile.write(response.encode())
+                else:
+                    logger.error("Not Authorized")
 
 try:
     CERTFILE_PATH = LOCALPATH + "certs/live/server.kyrus.xyz/fullchain.pem"

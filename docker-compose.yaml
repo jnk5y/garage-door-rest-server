@@ -1,11 +1,9 @@
 version: "3.7"
 
 secrets:
-  username:
+  AUTHKEY:
     external: true
-  password:
-    external: true
-  firebase_key:
+  FIREBASE_KEY:
     external: true
 
 services:
@@ -15,9 +13,8 @@ services:
     deploy:
       replicas: 1
     secrets:
-      - username
-      - password
-      - firebase_key
+      - AUTHKEY
+      - FIREBASE_KEY
     ports:
       - '8888:8888/tcp'
     environment:
