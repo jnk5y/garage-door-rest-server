@@ -7,11 +7,11 @@ services:
   - docker
   
 env:
-global:
-  - TRAVIS_COMMIT_SHORT=$(echo $TRAVIS_COMMIT | cut -c-7)
-  - IMAGE_NAME=garage-door-rest-server
-  - REPO_NAME=jnk5y/$IMAGE_NAME:latest
-  - TARGET_PLATFORMS=linux/amd64
+  global:
+    - TRAVIS_COMMIT_SHORT=$(echo $TRAVIS_COMMIT | cut -c-7)
+    - IMAGE_NAME=garage-door-rest-server
+    - REPO_NAME=jnk5y/$IMAGE_NAME:latest
+    - TARGET_PLATFORMS=linux/amd64
   
 before_install:
   - docker build -t jnk5y/garage-door-rest-server:$TRAVIS_COMMIT_SHORT -t jnk5y/garage-door-rest-service:latest .
