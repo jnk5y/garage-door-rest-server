@@ -16,7 +16,7 @@ env:
 before_install:
   - docker build -t jnk5y/$IMAGE_NAME:$TRAVIS_COMMIT_SHORT -t $REPO_NAME .
   
-after_success:
+script:
   - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
   - docker push jnk5y/$IMAGE_NAME:$TRAVIS_COMMIT_SHORT
   - docker push $REPO_NAME
