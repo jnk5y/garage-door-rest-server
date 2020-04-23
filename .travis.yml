@@ -1,0 +1,20 @@
+language: python
+
+python:
+  - 3.8
+
+services:
+  - docker
+  
+env:
+global:
+  - TRAVIS_COMMIT_SHORT=$(echo $TRAVIS_COMMIT | cut -c-7)
+  - IMAGE_NAME=garage-door-rest-server
+  - REPO_NAME=jnk5y/$IMAGE_NAME:latest
+  - TARGET_PLATFORMS=
+  
+before_install:
+  - docker build -t $IMAGE_NAME .
+  
+script:
+  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
