@@ -8,7 +8,7 @@ secrets:
 
 services:
   garage-door:
-    image: jnk5y/garage-door-rest-server:latest
+    image: jnk5y/garage-door-rest-server
     deploy:
       replicas: 1
     secrets:
