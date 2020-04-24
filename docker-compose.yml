@@ -1,0 +1,29 @@
+version: "3.7"
+
+secrets:
+  AUTHKEY:
+    external: true
+  FIREBASE_KEY:
+    external: true
+
+services:
+  garage-door:
+    image: jnk5y/garage-door-rest-server:latest
+    deploy:
+      replicas: 1
+    secrets:
+      - AUTHKEY
+      - FIREBASE_KEY
+    ports:
+      - '8888:8888/tcp'
+    environment:
+      TZ: 'America/New_York'
+    volumes:
+      - '/home/john/Documents/code/garage-door-rest-server/config/:/usr/src/app/config/:z'
+      - '/etc/letsencrypt/:/usr/src/app/certs/:z'
+#    healthcheck:
+#      test: curl --fail -k -s https://localhost:8888/garage/health || exit 1
+#      interval: 1m
+#      timeout: 10s
+#      retries: 2
+    restart: unless-stopped
