@@ -253,7 +253,8 @@ def garage_listener():
 
         # Deal with received messages
         if not listeningQueue.empty():
-            received = listeningQueue.get()
+            received_og = listeningQueue.get()
+            received = received_og.lower()
             response = 'unknown command'
             trigger = False
 
@@ -291,7 +292,7 @@ def garage_listener():
                 write_config(home_away,alert_open_notify,alert_open_minutes,alert_open_start,alert_open_end,forgot_open_notify,forgot_open_minutes)
                 response = "Settings saved"
             elif received.startswith('firebase:'):
-                firebase_id = received.replace('firebase:','')
+                firebase_id = received_og.replace('firebase:','')
                 response = 'Firebase ID saved'
 
             if trigger:
@@ -331,7 +332,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         path = self.path.split('?_=',1)[0]
         path = path.split('/')
         trigger = path[1].lower()
-        action = path[2].lower()
+        action = path[2]
         response = ''
         
         if trigger == 'garage' and action == 'health':
