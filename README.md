@@ -1,4 +1,6 @@
-[![Docker Stars](https://img.shields.io/docker/stars/jnk5y/garage-door-rest-server.svg)](https://hub.docker.com/r/jnk5y/shepherd/) [![Docker Pulls](https://img.shields.io/docker/pulls/jnk5y/garage-door-rest-server.svg)](https://hub.docker.com/r/jnk5y/garage-door-rest-server/)
+[![Build Status](https://travis-ci.com/jnk5y/garage-door-rest-server.svg?branch=master)](https://travis-ci.com/jnk5y/garage-door-rest-server)
+[![Docker Stars](https://img.shields.io/docker/stars/jnk5y/garage-door-rest-server.svg)](https://hub.docker.com/r/jnk5y/shepherd/) 
+[![Docker Pulls](https://img.shields.io/docker/pulls/jnk5y/garage-door-rest-server.svg)](https://hub.docker.com/r/jnk5y/garage-door-rest-server/)
 
 grage-door-rest-server
 ===============
