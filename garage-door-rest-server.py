@@ -303,7 +303,7 @@ def garage_listener():
                 except:
                     logger.error("Exception triggering garage: %s", sys.exc_info()[0])
             
-            logger.info('Received: %s. Responded: %s', received, response )
+            logger.info('Received: %s. Responded: %s', received_og, response )
             listeningQueue.task_done()
             responseQueue.put(response)
             responseQueue.join()
