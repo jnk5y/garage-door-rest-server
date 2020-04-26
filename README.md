@@ -17,7 +17,7 @@ RASPBERRY PI SETUP
 * Enable Remote GPIO on the Pi in the Raspberry Pi Configuration Tool.
 
 PI WIRING DIAGRAMS
-* Check out the wiki for the wiring diagrams
+* Check out the wiki for the wiring diagrams - https://github.com/jnk5y/garage-door-rest-server/wiki
 
 REST SERVER SETUP
 You must create 2 docker secrets (username, password, firebase_key), before running.
