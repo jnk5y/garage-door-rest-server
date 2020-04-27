@@ -156,7 +156,7 @@ def read_secrets():
         f.close()
 
         f = open('/run/secrets/FIREBASE_KEY', "r")
-        FIREBASE_KEY = f.readline().strip()
+        FIREBASE_KEY = "key=" + f.readline().strip()
         f.close()
     except:
         logger.error("Exception reading secrets files: %s", sys.exc_info()[0])
