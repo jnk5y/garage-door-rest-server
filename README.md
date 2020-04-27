@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.com/jnk5y/garage-door-rest-server.svg?branch=master)](https://travis-ci.com/jnk5y/garage-door-rest-server)
+[![Docker Stars](https://img.shields.io/docker/stars/jnk5y/garage-door-rest-server.svg)](https://hub.docker.com/r/jnk5y/shepherd/) 
+[![Docker Pulls](https://img.shields.io/docker/pulls/jnk5y/garage-door-rest-server.svg)](https://hub.docker.com/r/jnk5y/garage-door-rest-server/)
+
 grage-door-rest-server
 ===============
 
@@ -17,7 +21,7 @@ RASPBERRY PI SETUP
 * Enable Remote GPIO on the Pi in the Raspberry Pi Configuration Tool.
 
 PI WIRING DIAGRAMS
-* Check out the wiki for the wiring diagrams
+* Check out the wiki for the wiring diagrams - https://github.com/jnk5y/garage-door-rest-server/wiki
 
 REST SERVER SETUP
 You must create 2 docker secrets (username, password, firebase_key), before running.
