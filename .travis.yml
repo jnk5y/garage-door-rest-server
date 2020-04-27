@@ -1,7 +1,4 @@
-language: python
-
-python:
-  - 3.8
+language: minimal
   
 services:
   - docker
@@ -21,7 +18,7 @@ before_install:
   
 before_script:
   - ./trivy --exit-code 0 --severity HIGH --no-progress $REPO_NAME
-  - ./trivy --exit-code 1 --severity CRITICAL --no-progress $REPO_NAME
+  - ./trivy --exit-code 0 --severity CRITICAL --no-progress $REPO_NAME
 
 script:  
   - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
