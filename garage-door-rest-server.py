@@ -94,7 +94,6 @@ def format_duration(duration_sec):
 
     return ret
 
-
 def write_config(home_away,alert_open_notify,alert_open_minutes,alert_open_start,alert_open_end,forgot_open_notify,forgot_open_minutes):
     
     try:
@@ -159,10 +158,31 @@ def read_secrets():
         FIREBASE_KEY = "key=" + f.readline().strip()
         f.close()
     except:
-        logger.error("Exception reading secrets files: %s", sys.exc_info()[0])
-        sys.exit(0)
+       logger.error("Exception reading secrets files: %s", sys.exc_info()[0])
+       sys.exit(0)
 
     return AUTHKEY, FIREBASE_KEY
+
+def read_firebaseID():
+    try:
+        f = open(LOCALPATH + 'config/FIREBASE_ID.txt', "r")
+        FIREBASE_ID = f.readline().strip()
+        f.close()
+    except:
+        logger.error("Exception reading firebase id from file: %s", sys.exc_info()[0])
+        FIREBASE_ID = ''
+
+    return FIREBASE_ID
+
+def write_firebaseID(FIREBASE_ID):
+    try:
+        f = open(LOCALPATH + 'config/FIREBASE_ID.txt',"w")
+        f.write(FIREBASE_ID)
+        f.close()
+    except:
+        logger.error("Exception writing firebase id to file: %s", sys.exc_info()[0])
+
+    return
 
 ##############################################################################
 # Listener thread for getting/setting state and openning/closing the garage
@@ -198,7 +218,7 @@ def garage_listener():
     current_state = initial_state
     time_of_last_state_change = time.time()
     alert_state = False
-    firebase_id = ''
+    firebase_id = read_firebaseID()
 
     logger.info("Initial state of \"%s\" is %s and set to %s", name, initial_state, home_away)
 
@@ -293,6 +313,7 @@ def garage_listener():
                 response = "Settings saved"
             elif received.startswith('firebase:'):
                 firebase_id = received_og.replace('firebase:','')
+                write_firebaseID(firebase_id)
                 response = 'Firebase ID saved'
 
             if trigger:
