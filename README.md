@@ -24,10 +24,9 @@ PI WIRING DIAGRAMS
 * Check out the wiki for the wiring diagrams - https://github.com/jnk5y/garage-door-rest-server/wiki
 
 REST SERVER SETUP
-You must create 2 docker secrets (username, password, firebase_key), before running.
- * `printf "place-your-username-here" | docker secret create username -`
- * `printf "place-your-password-here" | docker secret create password -`
- * `printf "place-your-firebase-key-here" | docker secret create firebase_key -`
+You must create 2 docker secrets, AUTHKEY and FIREBASE_KEY, before running. AUTHKEY is your username:password base64 encrypted. FIREBASE_KEY is your app's firebase key at firebase.google.com.
+ * `printf "place-your-AUTHKEY-here" | docker secret create AUTHKEY -`
+ * `printf "place-your-FIREBASE_KEY-here" | docker secret create FIREBASE_KEY -`
  
 To build the container image from the main folder
  * `docker build . -t garage-door-rest-server`
