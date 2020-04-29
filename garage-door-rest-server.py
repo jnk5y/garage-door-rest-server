@@ -187,11 +187,12 @@ def write_firebaseID(FIREBASE_ID):
 def write_tz():
     try:
         f = open('/etc/timezone',"w")
-        f.write(os.getenv('TZ'))
+        f.write(os.getenv('TZ', 'US/Eastern'))
         f.close()
     except:
         logger.error("Exception writing timezone to file: %s", sys.exc_info()[0])
 
+    return
 
 ##############################################################################
 # Listener thread for getting/setting state and openning/closing the garage
@@ -401,8 +402,6 @@ try:
     httpd.socket = ssl.wrap_socket (httpd.socket, keyfile=KEYFILE_PATH, certfile=CERTFILE_PATH, server_side=True)
     sa = httpd.socket.getsockname()
 
-    # Banner
-    logger.info("==========================================================")
     write_tz()
     logger.info("Python REST Server")
     logger.info("Serving HTTPS on port %d", sa[1])
