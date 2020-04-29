@@ -18,7 +18,7 @@ services:
     ports:
       - '8888:8888/tcp'
     environment:
-      TZ: 'America/New_York'
+      TZ: 'US/Eastern'
     volumes:
       - '/home/john/Documents/code/garage-door-rest-server/config/:/usr/src/app/config/:z'
       - '/etc/letsencrypt/:/usr/src/app/certs/:z'
