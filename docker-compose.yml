@@ -7,7 +7,7 @@ secrets:
     external: true
 
 services:
-  garage-door:
+  app:
     image: jnk5y/garage-door-rest-server
     #image: garage-door-test
     deploy:

@@ -362,43 +362,47 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split('?_=',1)[0]
         path = path.split('/')
-        trigger = path[1].lower()
-        action = path[2]
-        response = ''
         
-        if trigger == 'garage' and action == 'health':
-#            self.send_response(200)
-#            self.send_header('Content-Type', 'text/plain');
-#            self.end_headers()
-#            response = 'healthy'
-#            self.wfile.write(response.encode())
-            pass
-        else:
-            AUTHKEY, FIREBASE_KEY = read_secrets()
-
-            if AUTHKEY == '':
-                logger.error('Empty Authentication')
-                sys.exit(0)
+        if len(path) > 1:
+            trigger = path[1].lower()
+            action = path[2]
+            response = ''
+        
+            if trigger == 'garage' and action == 'health':
+#                self.send_response(200)
+#                self.send_header('Content-Type', 'text/plain');
+#                self.end_headers()
+#                response = 'healthy'
+#                self.wfile.write(response.encode())
+                pass
             else:
-                if self.headers.get('Authorization') == ('Basic '+ AUTHKEY):
-                    if trigger == 'garage':
-                        listeningQueue.put(action)
-                        listeningQueue.join()
-                        response = responseQueue.get()
-                        responseQueue.task_done()
+                AUTHKEY, FIREBASE_KEY = read_secrets()
 
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'text/plain');
-                    self.end_headers()
-                    self.wfile.write(response.encode())
+                if AUTHKEY == '':
+                    logger.error('Empty Authentication Key Environment Variable')
+                    sys.exit(0)
                 else:
-                    logger.error("Not Authorized")
+                    if self.headers.get('Authorization') == ('Basic '+ AUTHKEY):
+                        if trigger == 'garage':
+                            listeningQueue.put(action)
+                            listeningQueue.join()
+                            response = responseQueue.get()
+                            responseQueue.task_done()
+
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'text/plain');
+                        self.end_headers()
+                        self.wfile.write(response.encode())
+                    else:
+                        logger.error('Not Authorized')
+        else:
+            logger.error('Bad Path')
 
 try:
     CERTFILE_PATH = LOCALPATH + "certs/live/server.kyrus.xyz/fullchain.pem"
     KEYFILE_PATH = LOCALPATH + "certs/live/server.kyrus.xyz/privkey.pem"
 
-    httpd = HTTPServer(('', 8888), SimpleHTTPRequestHandler)
+    httpd = ThreadingHTTPServer(('', 8888), SimpleHTTPRequestHandler)
     httpd.socket = ssl.wrap_socket (httpd.socket, keyfile=KEYFILE_PATH, certfile=CERTFILE_PATH, server_side=True)
     sa = httpd.socket.getsockname()
 
@@ -421,6 +425,7 @@ except:
 
 finally:
     logger.error("Exiting Python REST Server")
+
     exc_type, exc_value, exc_traceback = sys.exc_info()
     traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
     sys.exit(0)
