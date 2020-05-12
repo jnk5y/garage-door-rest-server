@@ -3,11 +3,6 @@ language: minimal
 services:
   - docker
 
-arch:
-  - amd64
-  - arm64
-  - arm32
-
 os: linux
 
 env:
@@ -15,22 +10,42 @@ env:
     - TRAVIS_COMMIT_SHORT=$(echo $TRAVIS_COMMIT | cut -c-7)
     - IMAGE_NAME=garage-door-rest-server
     - REPO_NAME=jnk5y/$IMAGE_NAME:latest
-    - TARGET_PLATFORMS=linux/amd64
+    - TARGET_PLATFORMS=linux/amd64,linux/arm/v7,linux/arm/v6,linux/arm64
   
 before_install:
-  - docker build -t jnk5y/$IMAGE_NAME:$TRAVIS_COMMIT_SHORT -t $REPO_NAME .
+  #  - docker build -t jnk5y/$IMAGE_NAME:$TRAVIS_COMMIT_SHORT -t $REPO_NAME .
   #  - export VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
   #  - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
   #  - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
+  
+install:
+  - docker container run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  - docker container run -d --rm --name buildkitd --privileged moby/buildkit:latest
+  - sudo docker container cp buildkitd:/usr/bin/buildctl /usr/local/bin/
+  - export BUILDKIT_HOST="docker-container://buildkitd"
   
 before_script:
   #  - ./trivy --exit-code 0 --severity HIGH --no-progress $REPO_NAME
   #  - ./trivy --exit-code 1 --severity CRITICAL --no-progress $REPO_NAME
 
 script:  
+  #  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+  #  - docker push jnk5y/$IMAGE_NAME:$TRAVIS_COMMIT_SHORT
+  #  - docker push $REPO_NAME
+
+script:
   - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-  - docker push jnk5y/$IMAGE_NAME:$TRAVIS_COMMIT_SHORT
-  - docker push $REPO_NAME
+  - >
+    buildctl build
+    --progress=plain
+    --frontend=dockerfile.v0
+    --local context=.
+    --local dockerfile=.
+    --opt filename=Dockerfile
+    --opt platform=$TARGET_PLATFORMS
+    --opt build-arg:VCS_REF=$TRAVIS_COMMIT_SHORT
+    --opt build-arg:BUILD_DATE=$(date -u +"%Y-%m-%dT%TZ")
+    --output type=image,name=$REPO_NAME,push=true
 
 cache:
   directories:
