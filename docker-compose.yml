@@ -9,7 +9,6 @@ secrets:
 services:
   app:
     image: jnk5y/garage-door-rest-server
-    #image: garage-door-test
     deploy:
       replicas: 1
     secrets:
@@ -19,6 +18,7 @@ services:
       - '8888:8888/tcp'
     environment:
       TZ: 'US/Eastern'
+      CERTPATH: 'live/server.kyrus.xyz'
     volumes:
       - '/home/john/Documents/code/garage-door-rest-server/config/:/usr/src/app/config/:z'
       - '/etc/letsencrypt/:/usr/src/app/certs/:z'

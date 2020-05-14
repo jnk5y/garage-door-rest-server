@@ -399,14 +399,23 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             logger.error('Bad Path')
 
 try:
-    CERTFILE_PATH = LOCALPATH + "certs/live/server.kyrus.xyz/fullchain.pem"
-    KEYFILE_PATH = LOCALPATH + "certs/live/server.kyrus.xyz/privkey.pem"
+    CERTFILE = LOCALPATH + "certs/" + os.environ.get('CERTPATH') + "/fullchain.pem"
+    KEYFILE = LOCALPATH + "certs/" + os.environ.get('CERTPATH') + "/privkey.pem"
+
+    if not os.path.isfile(CERTFILE):
+        logger.error("Certfile not found: %s", sys.exc_info()[0])
+        sys.exit(0)
+
+    if not os.path.isfile(KEYFILE):
+        logger.error("Keyfile not found: %s", sys.exc_info()[0])
+        sys.exit(0)
 
     httpd = HTTPServer(('', 8888), SimpleHTTPRequestHandler)
     httpd.socket = ssl.wrap_socket (httpd.socket, keyfile=KEYFILE_PATH, certfile=CERTFILE_PATH, server_side=True)
     sa = httpd.socket.getsockname()
 
     write_tz()
+
     logger.info("Python REST Server")
     logger.info("Serving HTTPS on port %d", sa[1])
 
