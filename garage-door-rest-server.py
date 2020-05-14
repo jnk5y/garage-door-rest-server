@@ -224,6 +224,7 @@ def garage_listener():
             initial_state = 'closed'
     except:
         logger.error("Exception reading garage state: %s", sys.exc_info()[0])
+        sys.exit(0)
 
     current_state = initial_state
     time_of_last_state_change = time.time()
@@ -411,7 +412,7 @@ try:
         sys.exit(0)
 
     httpd = HTTPServer(('', 8888), SimpleHTTPRequestHandler)
-    httpd.socket = ssl.wrap_socket (httpd.socket, keyfile=KEYFILE_PATH, certfile=CERTFILE_PATH, server_side=True)
+    httpd.socket = ssl.wrap_socket (httpd.socket, keyfile=KEYFILE, certfile=CERTFILE, server_side=True)
     sa = httpd.socket.getsockname()
 
     write_tz()
