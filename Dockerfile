@@ -1,6 +1,6 @@
 FROM alpine:3
 
-RUN apk add --no-cache py3-pip tzdata && \
+RUN apk add --no-cache py3-pip curl tzdata && \
 	pip3 install --no-cache-dir requests httplib2 pigpio parse
 
 COPY ./garage-door-rest-server.py /usr/src/app/
