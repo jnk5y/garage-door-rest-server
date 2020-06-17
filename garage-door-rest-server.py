@@ -364,17 +364,17 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         path = self.path.split('?_=',1)[0]
         path = path.split('/')
         
-        if len(path) > 1:
+        if len(path) > 2:
             trigger = path[1].lower()
             action = path[2]
             response = ''
         
             if trigger == 'garage' and action == 'health':
-#                self.send_response(200)
-#                self.send_header('Content-Type', 'text/plain');
-#                self.end_headers()
-#                response = 'healthy'
-#                self.wfile.write(response.encode())
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/plain');
+                self.end_headers()
+                response = 'healthy'
+                self.wfile.write(response.encode())
                 pass
             else:
                 AUTHKEY, FIREBASE_KEY = read_secrets()
@@ -400,8 +400,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             logger.error('Bad Path')
 
 try:
-    CERTFILE = LOCALPATH + "certs/" + os.environ.get('CERTPATH') + "/fullchain.pem"
-    KEYFILE = LOCALPATH + "certs/" + os.environ.get('CERTPATH') + "/privkey.pem"
+    CERTFILE = LOCALPATH + "certs/" + os.environ.get('CERTPATH') + "fullchain.pem"
+    KEYFILE = LOCALPATH + "certs/" + os.environ.get('CERTPATH') + "privkey.pem"
 
     if not os.path.isfile(CERTFILE):
         logger.error("Certfile not found: %s", sys.exc_info()[0])
