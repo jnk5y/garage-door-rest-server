@@ -18,13 +18,13 @@ services:
       - '8888:8888/tcp'
     environment:
       TZ: 'US/Eastern'
-      CERTPATH: 'live/server.kyrus.xyz'
+      CERTPATH: 'your/cert/path'
     volumes:
-      - '/home/john/Documents/code/garage-door-rest-server/config/:/usr/src/app/config/:z'
+      - 'garage-door-rest-server/config/:/usr/src/app/config/:z'
       - '/etc/letsencrypt/:/usr/src/app/certs/:z'
-#    healthcheck:
-#      test: curl --fail -k -s https://localhost:8888/garage/health || exit 1
-#      interval: 1m
-#      timeout: 10s
-#      retries: 2
+    healthcheck:
+      test: curl --fail -k -s https://localhost:8888/garage/health || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 2
     restart: unless-stopped
