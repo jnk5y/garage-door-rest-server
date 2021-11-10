@@ -400,7 +400,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             logger.error('Bad Path')
 
     def do_OPTIONS(self):
-        self.sendResponse(200)
         self.processRequest()
 
     def do_GET(self):
