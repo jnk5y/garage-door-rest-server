@@ -360,7 +360,7 @@ responseQueue = Queue()
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     ''' Main class for authentication. '''
-    def do_GET(self):
+    def processRequest(self):        
         path = self.path.split('?_=',1)[0]
         path = path.split('/')
         
@@ -398,6 +398,13 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                         logger.error('Not Authorized')
         else:
             logger.error('Bad Path')
+
+    def do_OPTIONS(self):
+        self.sendResponse(200)
+        self.processRequest()
+
+    def do_GET(self):
+        self.processRequest()
 
 try:
     CERTFILE = LOCALPATH + "certs/" + os.environ.get('CERTPATH') + "fullchain.pem"
