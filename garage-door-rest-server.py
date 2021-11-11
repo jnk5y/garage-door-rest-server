@@ -360,7 +360,14 @@ responseQueue = Queue()
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     ''' Main class for authentication. '''
-    def processRequest(self):        
+    def do_OPTIONS(self):
+        self.send_response(200, 'ok')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET')
+        self.send_header('Access-Control-Allow-Headers', 'Authorization,X-Requested-With,x-api-key,Content-Type')
+        self.end_headers()
+
+    def do_GET(self):        
         path = self.path.split('?_=',1)[0]
         path = path.split('/')
         
@@ -391,6 +398,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                             responseQueue.task_done()
 
                         self.send_response(200)
+                        self.send_header('Access-Control-Allow-Origin', '*')
                         self.send_header('Content-Type', 'text/plain');
                         self.end_headers()
                         self.wfile.write(response.encode())
@@ -398,13 +406,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                         logger.error('Not Authorized')
         else:
             logger.error('Bad Path')
-
-    def do_OPTIONS(self):
-        self.processRequest()
-
-    def do_GET(self):
-        self.processRequest()
-
 try:
     CERTFILE = LOCALPATH + "certs/" + os.environ.get('CERTPATH') + "fullchain.pem"
     KEYFILE = LOCALPATH + "certs/" + os.environ.get('CERTPATH') + "privkey.pem"
