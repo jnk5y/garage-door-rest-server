@@ -2,8 +2,6 @@
 
 A REST server that connects to a raspberry pi and allows you to query and update pins. This is used to detect if a garage door is opened or closed and to open and close it. Theoretically could be used to detect if anything is opened or closed.
 
-`podman run -d -e CERTPATH='live/LETSENRYPT_ADDRESS/' -e TZ='US/Eastern' --secret AUTHKEY --secret FIREBASE_KEY -p 8888:8888 -v PATH_TO_CONFIG_FOLDER/config/:/usr/src/app/config/:z -v PATH_TO_YOUR_LETSENCRYPT_CERTS_FOLDER:/usr/src/app/certs/:z --healthcheck-command 'curl --fail -k -s https://localhost:8888/garage/health || exit 1' --label "io.containers.autoupdate=image" --name garage-door garage-door-rest-server`
-
 ## BASIC RASPBERRY PI ZERO W SETUP
 Equipment required
 * Any Raspberry Pi will work but I used a zero w model
