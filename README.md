@@ -54,7 +54,7 @@ When running you can make calls to the rest server
  
 ### Examples
  * You can use postman to test but you must have a header with KEY: "Authorization" and VALUE: "Basic Base64-encoded-username:password". Your request would be GET https://<SERVER NAME>:8888/garage/command 
- * IFTTT webhook url would be https://username:password@<SERVER NAME>:8888/garage/{{TextField}}. I have it connected to Google Assistant - Say a phrase with a text ingredient and for What do you want to say? I have `Garage $`
+ * IFTTT webhook url would be `https://username:password@<SERVER NAME>:8888/garage/{{TextField}}`. I have it connected to Google Assistant - Say a phrase with a text ingredient and for What do you want to say? I have `Garage $`
  
 Thanks to:
 * Shane Rowley - https://github.com/smrowley
